@@ -15,6 +15,8 @@ import LoginScreen from './LoginScreen';
 import HomeScreen from './HomeScreen';
 import UsuarioScreen from './UsuarioScreen';
 import CadastroScreen from './Cadastro';
+import NovaTarefaScreen from './NovaTarefaScreen';
+import EditarTarefaScreen from './EditarTarefaScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -63,6 +65,10 @@ export default function App() {
         }}
       >
         <Stack.Screen name="Login" component={LoginScreen} />
+
+        <Stack.Screen name="NovaTarefa" component={NovaTarefaScreen} />
+
+        <Stack.Screen name="EditarTarefa" component={EditarTarefaScreen} />
 
         <Stack.Screen
           name="Drawer"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,37 +10,53 @@ import {
 
 import Header from './header';
 
-const tarefas = [
-  { id: '1', nome: 'Estudar', desc: "Estudar para a prova", status: "pendente", prioridade: "baixa", prazo: "25/03/2026 18:00" },
-  { id: '2', nome: 'Treinar', desc: "Ir para a academia", status: "em andamento", prioridade: "média", prazo: "23/03/2026 15:00" },
-  { id: '3', nome: 'Dormir', desc: "Dormir cedo", status: "pendente", prioridade: "alta", prazo: "22/03/2026 22:00" },
-  { id: '4', nome: 'Ir ao Trabalho', desc: "Trabalhar na clt para não ir morar na rua", status: "realizado", prioridade: "alta", prazo: "22/03/2026 06:00" },
-  { id: '5', nome: 'Ler livro', desc: "Ler 20 páginas de um livro", status: "pendente", prioridade: "média", prazo: "26/03/2026 20:00" },
-  { id: '6', nome: 'Fazer mercado', desc: "Comprar alimentos da semana", status: "pendente", prioridade: "alta", prazo: "24/03/2026 10:00" },
-  { id: '7', nome: 'Limpar quarto', desc: "Organizar e limpar o quarto", status: "em andamento", prioridade: "baixa", prazo: "23/03/2026 17:00" },
-  { id: '8', nome: 'Estudar programação', desc: "Praticar React Native", status: "pendente", prioridade: "alta", prazo: "27/03/2026 19:00" }
-];
-
-const getCorPrioridade = (prioridade) => {
-  if (prioridade === 'alta') return 'red';
-  if (prioridade === 'média') return 'orange';
-  if (prioridade === 'baixa') return 'green';
-  return 'gray';
-};
-
-const getCorStatus = (status) => {
-  if (status === 'pendente') return 'gray';
-  if (status === 'em andamento') return '#3B82F6';
-  if (status === 'realizado') return '#22C55E';
-  return 'black';
-};
-
 export default function HomeScreen({ navigation }) {
+
+  const [tarefas, setTarefas] = useState([]);
   const [visivel, setVisivel] = useState(false);
   const [tarefaSelecionada, setTarefaSelecionada] = useState(null);
 
+  useEffect(() => {
+
+    fetch('http://127.0.0.1:8000/api/tarefas')
+      .then((response) => response.json())
+      .then((data) => {
+
+        console.log(data);
+
+        setTarefas(data);
+
+      })
+      .catch((error) => {
+        console.log('ERRO API:', error);
+      });
+
+  }, []);
+
+  const getCorPrioridade = (prioridade) => {
+
+    if (prioridade === 'Alta') return 'red';
+
+    if (prioridade === 'Média') return 'orange';
+
+    if (prioridade === 'Baixa') return 'green';
+
+    return 'gray';
+  };
+
+  const getCorStatus = (status) => {
+
+    if (status === 'Pendente') return 'gray';
+
+    if (status === 'Em andamento') return '#3B82F6';
+
+    if (status === 'Concluido') return '#22C55E';
+
+    return 'black';
+  };
+
   const tarefasEmAndamento = tarefas.filter(
-    tarefa => tarefa.status === 'em andamento'
+    tarefa => tarefa.statusTarefa === 'Em andamento'
   ).length;
 
   return (
@@ -50,10 +66,10 @@ export default function HomeScreen({ navigation }) {
 
       <View style={styles.main}>
 
-        {/* Título principal */}
         <View style={styles.topo}>
+
           <Text style={styles.boasVindas}>
-            Olá, Otavio!
+            Olá!
           </Text>
 
           <Text style={styles.subtitulo}>
@@ -63,37 +79,48 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.linha} />
 
           <Text style={styles.tituloSecao}>
-            Tarefas de Hoje:
+            Tarefas:
           </Text>
+
         </View>
 
         <FlatList
           data={tarefas}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
+
           renderItem={({ item }) => (
+
             <TouchableOpacity
               onPress={() => {
+
                 setTarefaSelecionada(item);
+
                 setVisivel(true);
+
               }}
             >
+
               <View
                 style={[
                   styles.item,
-                  item.status === 'realizado' &&
-                    styles.tarefaRealizadaColuna
+
+                  item.statusTarefa === 'Concluido' &&
+                  styles.tarefaRealizadaColuna
                 ]}
               >
 
                 <Text
                   style={[
                     styles.coluna,
-                    item.status === 'realizado' &&
-                      styles.tarefaRealizada
+
+                    item.statusTarefa === 'Concluido' &&
+                    styles.tarefaRealizada
                   ]}
                 >
-                  {item.nome}
+
+                  {item.tituloTarefa}
+
                 </Text>
 
                 <View style={styles.statusContainer}>
@@ -101,17 +128,25 @@ export default function HomeScreen({ navigation }) {
                   <Text
                     style={[
                       styles.ultimaColuna,
-                      { color: getCorStatus(item.status) }
+                      {
+                        color: getCorStatus(
+                          item.statusTarefa
+                        )
+                      }
                     ]}
                   >
-                    {item.status}
+
+                    {item.statusTarefa}
+
                   </Text>
 
                   <View
                     style={[
                       styles.statusBolinha,
                       {
-                        backgroundColor: getCorStatus(item.status)
+                        backgroundColor: getCorStatus(
+                          item.statusTarefa
+                        )
                       }
                     ]}
                   />
@@ -119,104 +154,171 @@ export default function HomeScreen({ navigation }) {
                 </View>
 
               </View>
+
             </TouchableOpacity>
+
           )}
 
-            contentContainerStyle={{
-              paddingBottom: 120
-            }}
+          contentContainerStyle={{
+            paddingBottom: 120
+          }}
         />
 
-        {/* Modal */}
         <Modal
           animationType="slide"
           transparent={true}
           visible={visivel}
           onRequestClose={() => setVisivel(false)}
         >
+
           <View style={styles.overlay}>
 
             {tarefaSelecionada && (
+
               <View style={styles.modalBox}>
 
                 <View>
+
                   <Text style={styles.titulo}>
-                    {tarefaSelecionada.nome}
+
+                    {tarefaSelecionada.tituloTarefa}
+
                   </Text>
 
-                  <Text style={{ textAlign: 'center', color: '#64748B' }}>
-                    {tarefaSelecionada.desc}
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      color: '#64748B'
+                    }}
+                  >
+
+                    {tarefaSelecionada.descTarefa}
+
                   </Text>
+
                 </View>
 
                 <View>
+
                   <Text
                     style={{
                       color: getCorPrioridade(
-                        tarefaSelecionada.prioridade
+                        tarefaSelecionada.prioridadeTarefa
                       )
                     }}
                   >
-                    Prioridade {tarefaSelecionada.prioridade}
+
+                    Prioridade {tarefaSelecionada.prioridadeTarefa}
+
                   </Text>
 
                   <Text
                     style={{
                       color: getCorStatus(
-                        tarefaSelecionada.status
+                        tarefaSelecionada.statusTarefa
                       )
                     }}
                   >
-                    Sua tarefa está {tarefaSelecionada.status}
+
+                    Sua tarefa está {tarefaSelecionada.statusTarefa}
+
                   </Text>
 
                   <Text>
-                    Faça sua tarefa até:
-                    {' '}
-                    {tarefaSelecionada.prazo}
+
+                    Faça sua tarefa até:{' '}
+
+                    {tarefaSelecionada.prazoTarefa}
+
                   </Text>
+
                 </View>
 
-              <View style={styles.botoesModal}>
+                <View style={styles.botoesModal}>
 
                 <TouchableOpacity
                   style={styles.botaoExcluir}
+
+                  onPress={async () => {
+
+                    try {
+
+                      await fetch(
+                        `http://127.0.0.1:8000/api/tarefas/${tarefaSelecionada.id}`,
+                        {
+                          method: 'DELETE',
+                        }
+                      );
+
+                      const novaLista = tarefas.filter(
+                        (tarefa) =>
+                          tarefa.id !== tarefaSelecionada.id
+                      );
+
+                      setTarefas(novaLista);
+
+                      setVisivel(false);
+
+                    } catch (error) {
+
+                      console.log(error);
+
+                    }
+
+                  }}
                 >
+
                   <Text style={styles.textoBotaoAcao}>
                     Excluir
                   </Text>
+
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.botaoEditar}
-                >
-                  <Text style={styles.textoBotaoAcao}>
-                    Editar
-                  </Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.botaoEditar}
+                    onPress={() => navigation.navigate('EditarTarefa', {tarefa: tarefaSelecionada})}
+                  >
 
-                <TouchableOpacity
-                  style={styles.botaoFechar}
-                  onPress={() => setVisivel(false)}
-                >
-                  <Text style={{color: 'black', fontWeight: 'bold'}}>
-                    Fechar
-                  </Text>
-                </TouchableOpacity>
+                    <Text style={styles.textoBotaoAcao}>
+                      Editar
+                    </Text>
+
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.botaoFechar}
+                    onPress={() => setVisivel(false)}
+                  >
+
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      Fechar
+                    </Text>
+
+                  </TouchableOpacity>
+
+                </View>
 
               </View>
 
-              </View>
             )}
 
           </View>
+
         </Modal>
 
       </View>
 
-      {/* Botão adicionar */}
-      <TouchableOpacity style={styles.botaoAdicionar}>
-        <Text style={styles.mais}>+</Text>
+      <TouchableOpacity style={styles.botaoAdicionar} onPress={() => navigation.navigate('NovaTarefa')}>
+
+        <Text style={styles.mais}>
+          +
+        </Text>
+
       </TouchableOpacity>
 
     </View>
@@ -274,18 +376,16 @@ const styles = StyleSheet.create({
     padding: 18,
     marginBottom: 14,
     marginHorizontal: 15,
-
     backgroundColor: '#FFFFFF',
-
     borderRadius: 16,
 
     flexDirection: 'row',
-    gap: 10,
 
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
 
     shadowColor: '#000',
+
     shadowOffset: {
       width: 0,
       height: 2,
@@ -329,11 +429,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f1f1',
   },
 
-  textoBotao: {
-    color: 'black',
-    fontWeight: 'bold',
-  },
-
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -350,20 +445,10 @@ const styles = StyleSheet.create({
     gap: 20,
   },
 
-  botaoFechar: {
-    marginTop: 15,
-    backgroundColor: '#e5f0fc',
-    padding: 10,
-    borderRadius: 8,
-  },
-
   botaoAdicionar: {
     position: 'absolute',
     bottom: 25,
     right: 25,
-
-    marginBottom: 25,
-    marginTop: 25,
 
     width: 65,
     height: 65,
@@ -374,15 +459,6 @@ const styles = StyleSheet.create({
 
     justifyContent: 'center',
     alignItems: 'center',
-
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
 
     elevation: 6,
   },
@@ -395,35 +471,34 @@ const styles = StyleSheet.create({
   },
 
   botoesModal: {
-  flexDirection: 'row',
-  gap: 10,
-  marginTop: 15,
-},
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 15,
+  },
 
-botaoExcluir: {
-  backgroundColor: '#EF4444',
-  paddingVertical: 10,
-  paddingHorizontal: 18,
-  borderRadius: 8,
-},
+  botaoExcluir: {
+    backgroundColor: '#EF4444',
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 8,
+  },
 
-botaoEditar: {
-  backgroundColor: '#F59E0B',
-  paddingVertical: 10,
-  paddingHorizontal: 18,
-  borderRadius: 8,
-},
+  botaoEditar: {
+    backgroundColor: '#F59E0B',
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 8,
+  },
 
-botaoFechar: {
-  backgroundColor: '#E2E8F0',
-  color: 'black',
-  paddingVertical: 10,
-  paddingHorizontal: 18,
-  borderRadius: 8,
-},
+  botaoFechar: {
+    backgroundColor: '#E2E8F0',
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 8,
+  },
 
-textoBotaoAcao: {
-  color: 'white',
-  fontWeight: 'bold',
-},
+  textoBotaoAcao: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
 });
