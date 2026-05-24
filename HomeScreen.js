@@ -69,7 +69,7 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.topo}>
 
           <Text style={styles.boasVindas}>
-            Olá!
+            Olá, o que planeja para hoje?
           </Text>
 
           <Text style={styles.subtitulo}>

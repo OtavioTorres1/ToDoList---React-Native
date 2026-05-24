@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
 import {
   View,
   Text,
@@ -6,114 +7,110 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  ScrollView
 } from 'react-native';
 
 import Header from './header';
 
-const tarefas = [
-  {
-    id: '1',
-    foto: require('./assets/Perfil2.jpeg'),
-    nome: 'Otavio Ribeiro Torres',
-    email: 'otribeiro122@gmail.com',
-    datanasc: '30/04/2008'
-  }
-];
-
 export default function UsuarioScreen({ navigation }) {
-  return (
-    <ScrollView style={styles.container}>
 
-      {/* Header */}
+  const [usuario, setUsuario] = useState(null);
+
+  useEffect(() => {
+
+  fetch('http://127.0.0.1:8000/api/usuarios')
+    .then((response) => response.json())
+    .then((data) => {
+
+      console.log(data);
+
+      setUsuario(data);
+
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+    }, []);
+
+  return (
+
+    <View style={styles.container}>
+
       <Header navigation={navigation} />
 
-      {/* Conteúdo da página */}
-      <View style={styles.main}>
+{usuario && (
 
-        <FlatList
-          data={tarefas}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
+<View style={styles.main}>
 
-              {/* Foto */}
-              <View style={styles.partefoto}>
+  <View style={styles.item}>
 
-                <TouchableOpacity>
-                  <Image
-                    source={item.foto}
-                    style={styles.foto}
-                  />
+    <View style={styles.partefoto}>
 
-                  <Text style={styles.alterarFoto}>
-                    Alterar
-                  </Text>
-                </TouchableOpacity>
+      <Image
+        source={require('./assets/Perfil2.jpeg')}
+        style={styles.foto}
+      />
 
-                <Text style={styles.textFoto}>
-                  Foto de perfil
-                </Text>
+      <Text style={styles.alterarFoto}>
+        Alterar
+      </Text>
 
-              </View>
+      <Text style={styles.textFoto}>
+        Foto de perfil
+      </Text>
 
-              {/* Nome */}
-              <View style={styles.infosUsuario}>
-                <Text style={styles.tituloInfo}>Nome:</Text>
+    </View>
 
-                <Text style={styles.textUsuario}>
-                  {item.nome}
-                </Text>
-              </View>
+    <View style={styles.infosUsuario}>
 
-              {/* Email */}
-              <View style={styles.infosUsuario}>
-                <Text style={styles.tituloInfo}>Email:</Text>
+      <Text style={styles.tituloInfo}>
+        Nome:
+      </Text>
 
-                <Text style={styles.textUsuario}>
-                  {item.email}
-                </Text>
-              </View>
+      <Text style={styles.textUsuario}>
+        {usuario.nomeUsuario}
+      </Text>
 
-              {/* Nascimento */}
-              <View style={styles.infosUsuario}>
-                <Text style={styles.tituloInfo}>
-                  Nascimento:
-                </Text>
+    </View>
 
-                <Text style={styles.textUsuario}>
-                  {item.datanasc}
-                </Text>
-              </View>
+    <View style={styles.infosUsuario}>
 
-            </View>
-          )}
-        />
+      <Text style={styles.tituloInfo}>
+        Email:
+      </Text>
 
-        {/* Botões */}
-        <View style={styles.areaBotoes}>
+      <Text style={styles.textUsuario}>
+        {usuario.emailUsuario}
+      </Text>
 
-          <TouchableOpacity style={styles.botaoEditar}>
-            <Text style={styles.textoBotao}>
-              Editar
-            </Text>
-          </TouchableOpacity>
+    </View>
 
-          <TouchableOpacity style={styles.botaoExcluir}>
-            <Text style={styles.textoBotao}>
-              Excluir
-            </Text>
-          </TouchableOpacity>
+    <View style={styles.infosUsuario}>
 
-        </View>
+      <Text style={styles.tituloInfo}>
+        Nascimento:
+      </Text>
 
-      </View>
+      <Text style={styles.textUsuario}>
+        {usuario.datanascUsuario}
+      </Text>
 
-    </ScrollView>
+    </View>
+
+  </View>
+
+</View>
+
+)}
+
+    </View>
+
   );
+
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: '#F4F6FA',
@@ -152,7 +149,7 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 30,
     display: 'flex',
-    gap: 80,
+    gap: 70,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'stretch',
@@ -176,7 +173,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     textAlign: 'center',
-    marginTop: -90
+    marginTop: -160
   },
 
   textFoto: {
@@ -185,7 +182,6 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
 
-  /* Área dos botões */
   areaBotoes: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -194,7 +190,6 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
 
-  /* Botão editar */
   botaoEditar: {
     backgroundColor: '#ff8c00',
     paddingVertical: 12,
@@ -202,7 +197,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  /* Botão excluir */
   botaoExcluir: {
     backgroundColor: '#c1121f',
     paddingVertical: 12,
@@ -210,10 +204,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  /* Texto dos botões */
   textoBotao: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },
+
 });
