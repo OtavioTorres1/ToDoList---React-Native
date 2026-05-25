@@ -344,7 +344,7 @@ export default function EditarUsuarioScreen({
           {/* BOTÃO VOLTAR */}
           <TouchableOpacity
             style={styles.botaoVoltar}
-            onPress={() => navigation.navigate('Usuario')}
+            onPress={() => navigation.navigate('Drawer')}
           >
 
             <Text style={styles.textoBotao}>

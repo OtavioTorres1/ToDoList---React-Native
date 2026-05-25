@@ -151,6 +151,21 @@ export default function UsuarioScreen({ navigation }) {
 
   </TouchableOpacity>
 
+    <TouchableOpacity
+    style={styles.botaoSair}
+    onPress={() =>
+      navigation.navigate(
+        'Login'
+      )
+    }
+  >
+
+    <Text style={styles.textoBotaoSair}>
+      Sair
+    </Text>
+
+  </TouchableOpacity>
+
 </View> 
 
   </View>
@@ -260,8 +275,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
+    botaoSair: {
+    backgroundColor: '#fff',
+    borderWidth: 2,
+    borderColor: 'red',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+  },
+
   textoBotao: {
     color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+
+    textoBotaoSair: {
+    color: 'red',
     fontSize: 18,
     fontWeight: 'bold',
   },
