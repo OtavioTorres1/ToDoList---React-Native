@@ -17,6 +17,7 @@ import UsuarioScreen from './UsuarioScreen';
 import CadastroScreen from './Cadastro';
 import NovaTarefaScreen from './NovaTarefaScreen';
 import EditarTarefaScreen from './EditarTarefaScreen';
+import EditarUsuarioScreen from './EditarUsuarioScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -69,6 +70,8 @@ export default function App() {
         <Stack.Screen name="NovaTarefa" component={NovaTarefaScreen} />
 
         <Stack.Screen name="EditarTarefa" component={EditarTarefaScreen} />
+
+        <Stack.Screen name="EditarUsuario" component={EditarUsuarioScreen} />
 
         <Stack.Screen
           name="Drawer"

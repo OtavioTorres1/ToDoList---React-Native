@@ -32,6 +32,31 @@ export default function UsuarioScreen({ navigation }) {
 
     }, []);
 
+    async function excluirUsuario() {
+
+  try {
+
+    await fetch(
+      `http://127.0.0.1:8000/api/usuarios/${usuario.id}`,
+      {
+        method: 'DELETE',
+      }
+    );
+
+    alert('Usuário excluído!');
+
+    navigation.navigate('Login');
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert('Erro ao excluir usuário');
+
+  }
+
+}
+
   return (
 
     <View style={styles.container}>
@@ -96,6 +121,37 @@ export default function UsuarioScreen({ navigation }) {
       </Text>
 
     </View>
+
+    <View style={styles.areaBotoes}>
+
+  <TouchableOpacity
+    style={styles.botaoEditar}
+    onPress={() =>
+      navigation.navigate(
+        'EditarUsuario',
+        { usuario }
+      )
+    }
+  >
+
+    <Text style={styles.textoBotao}>
+      Editar
+    </Text>
+
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={styles.botaoExcluir}
+    onPress={excluirUsuario}
+  >
+
+    <Text style={styles.textoBotao}>
+      Excluir
+    </Text>
+
+  </TouchableOpacity>
+
+</View> 
 
   </View>
 
