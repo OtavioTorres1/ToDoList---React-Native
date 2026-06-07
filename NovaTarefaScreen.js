@@ -12,7 +12,8 @@ import {
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api/addTarefa'; 
+// para dar certo, iniciar com php artisan serve --host=0.0.0.0
+const API_URL = 'http://192.168.1.8:8000/api/addTarefa'; 
 
 export default function NovaTarefaScreen({ navigation }) {
 

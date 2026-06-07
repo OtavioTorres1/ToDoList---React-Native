@@ -13,7 +13,8 @@ import axios from 'axios';
 
 import Header from './header';
 
-const API_URL = 'http://localhost:8000/api/Usuario'; 
+// para dar certo, iniciar com php artisan serve --host=0.0.0.0
+const API_URL = 'http://192.168.1.8:8000/api/Usuario'; 
 
 export default function UsuarioScreen({ navigation }) {
 

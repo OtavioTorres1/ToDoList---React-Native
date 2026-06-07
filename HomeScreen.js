@@ -13,15 +13,14 @@ import axios from 'axios';
 
 import Header from './header';
 
-const API_URL = 'http://localhost:8000/api/tarefasApi'; 
+// para dar certo, iniciar com php artisan serve --host=0.0.0.0
+const API_URL = 'http://192.168.1.8:8000/api/tarefasApi'; 
 
 export default function HomeScreen({ navigation }) {
 
   const [tarefas, setTarefas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [visivel, setVisivel] = useState(false);
-  const [tarefaSelecionada, setTarefaSelecionada] = useState(null);
 
   useEffect(() => {
 
@@ -60,9 +59,6 @@ export default function HomeScreen({ navigation }) {
     return 'black';
   };
 
-  const tarefasEmAndamento = tarefas.filter(
-    tarefa => tarefa.statusTarefa === 'Em andamento'
-  ).length;
 
   if (loading) {
     return (
@@ -121,7 +117,7 @@ export default function HomeScreen({ navigation }) {
           </Text>
 
           <Text style={styles.subtitulo}>
-            Você tem {tarefasEmAndamento} tarefas em andamento.
+            Você tem tarefas em andamento.
           </Text>
 
           <View style={styles.linha} />
@@ -139,15 +135,7 @@ export default function HomeScreen({ navigation }) {
 
           renderItem={({ item }) => (
 
-            <TouchableOpacity
-              onPress={() => {
 
-                setTarefaSelecionada(item);
-
-                setVisivel(true);
-
-              }}
-            >
 
               <View
                 style={[
@@ -203,133 +191,12 @@ export default function HomeScreen({ navigation }) {
 
               </View>
 
-            </TouchableOpacity>
-
           )}
 
           contentContainerStyle={{
             paddingBottom: 120
           }}
         />
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={visivel}
-          onRequestClose={() => setVisivel(false)}
-        >
-
-          <View style={styles.overlay}>
-
-            {tarefaSelecionada && (
-
-              <View style={styles.modalBox}>
-
-                <View>
-
-                  <Text style={styles.titulo}>
-
-                    {tarefaSelecionada.tituloTarefa}
-
-                  </Text>
-
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      color: '#64748B'
-                    }}
-                  >
-
-                    {tarefaSelecionada.descTarefa}
-
-                  </Text>
-
-                </View>
-
-                <View>
-
-                  <Text
-                    style={{
-                      color: getCorPrioridade(
-                        tarefaSelecionada.prioridadeTarefa
-                      )
-                    }}
-                  >
-
-                    Prioridade {tarefaSelecionada.prioridadeTarefa}
-
-                  </Text>
-
-                  <Text
-                    style={{
-                      color: getCorStatus(
-                        tarefaSelecionada.statusTarefa
-                      )
-                    }}
-                  >
-
-                    Sua tarefa está {tarefaSelecionada.statusTarefa}
-
-                  </Text>
-
-                  <Text>
-
-                    Faça sua tarefa até:{' '}
-
-                    {tarefaSelecionada.prazoTarefa}
-
-                  </Text>
-
-                </View>
-
-                <View style={styles.botoesModal}>
-
-                <TouchableOpacity
-                  style={styles.botaoExcluir}
-                >
-
-                  <Text style={styles.textoBotaoAcao}>
-                    Excluir
-                  </Text>
-
-                </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.botaoEditar}
-                  >
-
-                    <Text style={styles.textoBotaoAcao}>
-                      Editar
-                    </Text>
-
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.botaoFechar}
-                    onPress={() => setVisivel(false)}
-                  >
-
-                    <Text
-                      style={{
-                        color: 'black',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      Fechar
-                    </Text>
-
-                  </TouchableOpacity>
-
-                </View>
-
-              </View>
-
-            )}
-
-          </View>
-
-        </Modal>
-
       </View>
 
       <TouchableOpacity style={styles.botaoAdicionar} onPress={() => navigation.navigate('NovaTarefa')}>
