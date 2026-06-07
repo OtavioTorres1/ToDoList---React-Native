@@ -6,29 +6,34 @@ import {
   FlatList,
   Modal,
   TouchableOpacity,
+  ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
+import axios from 'axios';
 
 import Header from './header';
+
+const API_URL = 'http://localhost:8000/api/tarefasApi'; 
 
 export default function HomeScreen({ navigation }) {
 
   const [tarefas, setTarefas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [visivel, setVisivel] = useState(false);
   const [tarefaSelecionada, setTarefaSelecionada] = useState(null);
 
   useEffect(() => {
 
-    fetch('http://127.0.0.1:8000/api/tarefas')
-      .then((response) => response.json())
-      .then((data) => {
-
-        console.log(data);
-
-        setTarefas(data);
-
+      axios.get(API_URL)
+      .then((response) => {
+        setTarefas(response.data);
+        setLoading(false);
       })
-      .catch((error) => {
-        console.log('ERRO API:', error);
+      .catch((err) => {
+        console.error("Erro na requisição Axios:", err);
+        setError('Não foi possível carregar suas tarefas.');
+        setLoading(false);
       });
 
   }, []);
@@ -58,6 +63,49 @@ export default function HomeScreen({ navigation }) {
   const tarefasEmAndamento = tarefas.filter(
     tarefa => tarefa.statusTarefa === 'Em andamento'
   ).length;
+
+  if (loading) {
+    return (
+      <View style={styles.centerLoading}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Carregando tarefas...</Text>
+      </View>
+    );
+  }
+  
+  if (error) {
+    return (
+          <View style={styles.container}>
+
+      <Header navigation={navigation} />
+
+      <View style={styles.main}>
+
+        <View style={styles.topo}>
+
+          <Text style={styles.boasVindas}>
+            Olá, o que planeja para hoje?
+          </Text>
+
+          <Text style={styles.subtitulo}>
+            Você tem tarefas em andamento.
+          </Text>
+
+          <View style={styles.linha} />
+
+          <Text style={styles.tituloSecao}>
+            Tarefas:
+          </Text>
+        
+        </View>
+        </View>
+    
+      <View style={styles.center}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -238,34 +286,6 @@ export default function HomeScreen({ navigation }) {
 
                 <TouchableOpacity
                   style={styles.botaoExcluir}
-
-                  onPress={async () => {
-
-                    try {
-
-                      await fetch(
-                        `http://127.0.0.1:8000/api/tarefas/${tarefaSelecionada.id}`,
-                        {
-                          method: 'DELETE',
-                        }
-                      );
-
-                      const novaLista = tarefas.filter(
-                        (tarefa) =>
-                          tarefa.id !== tarefaSelecionada.id
-                      );
-
-                      setTarefas(novaLista);
-
-                      setVisivel(false);
-
-                    } catch (error) {
-
-                      console.log(error);
-
-                    }
-
-                  }}
                 >
 
                   <Text style={styles.textoBotaoAcao}>
@@ -276,7 +296,6 @@ export default function HomeScreen({ navigation }) {
 
                   <TouchableOpacity
                     style={styles.botaoEditar}
-                    onPress={() => navigation.navigate('EditarTarefa', {tarefa: tarefaSelecionada})}
                   >
 
                     <Text style={styles.textoBotaoAcao}>
@@ -499,6 +518,33 @@ const styles = StyleSheet.create({
 
   textoBotaoAcao: {
     color: 'white',
+    fontWeight: 'bold',
+  },
+
+  center: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: '#F4F6FA',
+    flexDirection: 'column'
+  },
+
+    centerLoading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F4F6FA',
+    flexDirection: 'column'
+  },
+
+  loadingText: {
+    marginTop: 10,
+    color: '#666',
+  },
+
+  errorText: {
+    color: '#d9534f',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });

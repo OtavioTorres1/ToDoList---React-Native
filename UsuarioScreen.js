@@ -7,55 +7,51 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
+import axios from 'axios';
 
 import Header from './header';
+
+const API_URL = 'http://localhost:8000/api/Usuario'; 
 
 export default function UsuarioScreen({ navigation }) {
 
   const [usuario, setUsuario] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
 
-  fetch('http://127.0.0.1:8000/api/usuarios')
-    .then((response) => response.json())
-    .then((data) => {
+      axios.get(API_URL)
+      .then((response) => {
+        setUsuario(response.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Erro na requisição Axios:", err);
+        setError('Não foi possível carregar seu perfil.');
+        setLoading(false);
+      });
 
-      console.log(data);
+  }, []);
 
-      setUsuario(data);
-
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-
-    }, []);
-
-    async function excluirUsuario() {
-
-  try {
-
-    await fetch(
-      `http://127.0.0.1:8000/api/usuarios/${usuario.id}`,
-      {
-        method: 'DELETE',
-      }
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Carregando contatos...</Text>
+      </View>
     );
-
-    alert('Usuário excluído!');
-
-    navigation.navigate('Login');
-
-  } catch (error) {
-
-    console.log(error);
-
-    alert('Erro ao excluir usuário');
-
   }
-
-}
+  
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
 
@@ -126,12 +122,6 @@ export default function UsuarioScreen({ navigation }) {
 
   <TouchableOpacity
     style={styles.botaoEditar}
-    onPress={() =>
-      navigation.navigate(
-        'EditarUsuario',
-        { usuario }
-      )
-    }
   >
 
     <Text style={styles.textoBotao}>
@@ -142,7 +132,6 @@ export default function UsuarioScreen({ navigation }) {
 
   <TouchableOpacity
     style={styles.botaoExcluir}
-    onPress={excluirUsuario}
   >
 
     <Text style={styles.textoBotao}>
@@ -293,6 +282,22 @@ const styles = StyleSheet.create({
     textoBotaoSair: {
     color: 'red',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+
+    center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f4f6f9',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#666',
+  },
+  errorText: {
+    color: '#d9534f',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 

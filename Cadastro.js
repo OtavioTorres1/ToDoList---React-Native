@@ -6,37 +6,71 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image
+  Image,
+  Alert
 } from 'react-native';
 
 import axios from 'axios';
 
+const API_URL = 'http://localhost:8000/api/addUsuario'; 
+
 export default function EnderecoScreen({ navigation }) {
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [dataNascimento, setDataNascimento] = useState('');
-  const [senha, setSenha] = useState('');
-  const [cep, setCep] = useState('');
-  const [endereco, setEndereco] = useState(null);
-  const [erro, setErro] = useState('');
-
-  const buscarEndereco = async () => {
-   
-    try {      
-      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-      if (response.data.erro) {
-        setErro('CEP não encontrado.');
-        setEndereco(null);
-      } else {
-        setEndereco(response.data);
-        setErro('');
-      }
-    } catch (error) {
-      setErro('Ocorreu um erro na consulta.');
-      setEndereco(null);
+  const [nomeUsuario, setNome] = useState('');
+  const [emailUsuario, setEmail] = useState('');
+  const [senhaUsuario, setSenha] = useState('');
+  const [datanascUsuario, setDataNascimento] = useState('');
+  const [cepUsuario, setCep] = useState('');
+  const [logradouroUsuario, setRua] = useState('');
+  const [numlogradouroUsuario, setNumEndereco] = useState('');
+  const [complementoUsuario, setComplemento] = useState('');
+  const [bairroUsuario, setBairro] = useState('');
+  const [cidadeUsuario, setCidade] = useState('');
+  const [estadoUsuario, setEstado] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const handleEnviar = () => {
+    // Validação simples
+    if (!nomeUsuario || !emailUsuario || !senhaUsuario || !datanascUsuario|| !cepUsuario ||!logradouroUsuario||!numlogradouroUsuario||!complementoUsuario||!bairroUsuario||!cidadeUsuario||!estadoUsuario ) {
+      Alert.alert('Atenção', 'Por favor, preencha todos os campos.');
+      return;
     }
+    const dadosUsuario = {
+    nomeUsuario: nomeUsuario,
+    emailUsuario: emailUsuario,
+    senhaUsuario: senhaUsuario,
+    datanascUsuario: datanascUsuario,
+    cepUsuario: cepUsuario,
+    logradouroUsuario: logradouroUsuario,
+    numlogradouroUsuario: numlogradouroUsuario,
+    complementoUsuario: complementoUsuario,
+    bairroUsuario: bairroUsuario,
+    cidadeUsuario: cidadeUsuario,
+    estadoUsuario: estadoUsuario
   };
-
+  axios.post(API_URL, dadosUsuario)
+    .then((response) => {
+      Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+//limpa o form
+      setNome('');
+      setEmail('');
+      setSenha('');
+      setDataNascimento('');
+      setCep('');
+      setRua('');
+      setNumEndereco('');
+      setComplemento('');
+      setBairro('');
+      setCidade('');
+      setEstado('');
+    })
+    .catch((err) => {
+      console.error("Erro na requisição POST Axios:", err);
+      Alert.alert('Erro' ,"Não foi possível realizar o cadastro.");
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -65,7 +99,7 @@ export default function EnderecoScreen({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Digite seu nome"
-          value={nome}
+          value={nomeUsuario}
           onChangeText={setNome}
         />
 
@@ -73,7 +107,7 @@ export default function EnderecoScreen({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Digite seu email"
-          value={email}
+          value={emailUsuario}
           onChangeText={setEmail}
           keyboardType="email-address"
         />
@@ -81,8 +115,8 @@ export default function EnderecoScreen({ navigation }) {
         <Text style={styles.tituloInput}>Data de nascimento</Text>
         <TextInput
           style={styles.input}
-          placeholder="DD/MM/AAAA"
-          value={dataNascimento}
+          placeholder="AAAA-MM-DD"
+          value={datanascUsuario}
           onChangeText={setDataNascimento}
         />
 
@@ -90,7 +124,7 @@ export default function EnderecoScreen({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Digite sua senha"
-          value={senha}
+          value={senhaUsuario}
           onChangeText={setSenha}
           secureTextEntry
         />
@@ -104,61 +138,63 @@ export default function EnderecoScreen({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Digite o CEP"
-          value={cep}
+          value={cepUsuario}
           onChangeText={setCep}
           keyboardType="numeric"
         />
 
-        <TouchableOpacity style={styles.botaoSecundario} onPress={buscarEndereco}>
-          <Text style={styles.textoBotao}>
-            Buscar CEP
-          </Text>
-        </TouchableOpacity>
 
-        {erro && <Text style={styles.error}>{erro}</Text>}
 
-{endereco && (
-  <>
-    <Text style={styles.tituloInput}>Logradouro</Text>
-    <TextInput
-      style={styles.input}
-      value={endereco.logradouro}
-      editable={false}
-    />
 
-    <Text style={styles.tituloInput}>Número</Text>
-    <TextInput style={styles.input} />
 
-    <Text style={styles.tituloInput}>Complemento</Text>
-    <TextInput style={styles.input} />
+<Text style={styles.tituloInput}>Logradouro</Text>
+<TextInput
+  style={styles.input}
+  value={logradouroUsuario}
+  onChangeText={setRua}
+/>
 
-    <Text style={styles.tituloInput}>Bairro</Text>
-    <TextInput
-      style={styles.input}
-      value={endereco.bairro}
-      editable={false}
-    />
+<Text style={styles.tituloInput}>Número</Text>
+<TextInput
+  style={styles.input}
+  value={numlogradouroUsuario}
+  onChangeText={setNumEndereco}
+/>
 
-    <Text style={styles.tituloInput}>Cidade</Text>
-    <TextInput
-      style={styles.input}
-      value={endereco.localidade}
-      editable={false}
-    />
+<Text style={styles.tituloInput}>Complemento</Text>
+<TextInput
+  style={styles.input}
+  value={complementoUsuario}
+  onChangeText={setComplemento}
+/>
 
-    <Text style={styles.tituloInput}>Estado</Text>
-    <TextInput
-      style={styles.input}
-      value={endereco.uf}
-      editable={false}
-    />
-  </>
-)}
+<Text style={styles.tituloInput}>Bairro</Text>
+<TextInput
+  style={styles.input}
+  value={bairroUsuario}
+  onChangeText={setBairro}
+/>
+
+<Text style={styles.tituloInput}>Cidade</Text>
+<TextInput
+  style={styles.input}
+  value={cidadeUsuario}
+  onChangeText={setCidade}
+/>
+
+<Text style={styles.tituloInput}>Estado</Text>
+<TextInput
+  style={styles.input}
+  value={estadoUsuario}
+  onChangeText={setEstado}
+/>
+ 
 
         {/* Botão cadastrar */}
         <TouchableOpacity
           style={styles.botao}
-          onPress={() => navigation.navigate('Login')}
+          onPress={handleEnviar}
+          disabled={loading}
         >
           <Text style={styles.textoBotao}>
             Cadastrar
@@ -272,7 +308,6 @@ const styles = StyleSheet.create({
   img: {
     height: 150,
     width: 250,
-   
     marginBottom: 10,
   },
 });

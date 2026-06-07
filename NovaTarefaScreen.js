@@ -10,6 +10,10 @@ import {
   ScrollView,
 } from 'react-native';
 
+import axios from 'axios';
+
+const API_URL = 'http://localhost:8000/api/addTarefa'; 
+
 export default function NovaTarefaScreen({ navigation }) {
 
   const [tituloTarefa, setTituloTarefa] = useState('');
@@ -17,58 +21,41 @@ export default function NovaTarefaScreen({ navigation }) {
   const [statusTarefa, setStatusTarefa] = useState('Pendente');
   const [prioridadeTarefa, setPrioridadeTarefa] = useState('Baixa');
   const [prazoTarefa, setPrazoTarefa] = useState('');
-  const [tb_usuario_id, setTbUsuarioId] = useState('1');
+  const [tb_usuario_id, setTbUsuarioId] = useState('');
 
-  async function criarTarefa() {
-
-    try {
-
-      const response = await fetch(
-        'http://127.0.0.1:8000/api/tarefas',
-        {
-          method: 'POST',
-
-          headers: {
-            'Content-Type': 'application/json',
-          },
-
-          body: JSON.stringify({
-
-            tituloTarefa,
-            descTarefa,
-            statusTarefa,
-            prioridadeTarefa,
-            prazoTarefa,
-            tb_usuario_id,
-
-          }),
-
-        }
-      );
-
-      const data = await response.json();
-
-      console.log(data);
-
-      Alert.alert(
-        'Sucesso',
-        'Tarefa criada com sucesso!'
-      );
-
-      navigation.navigate('Drawer');
-
-    } catch (error) {
-
-      console.log(error);
-
-      Alert.alert(
-        'Erro',
-        'Erro ao criar tarefa'
-      );
-
-    }
-
-  }
+   const handleEnviar = () => {
+     // Validação simples
+     if (!tituloTarefa || !descTarefa || !statusTarefa || !prioridadeTarefa|| !prazoTarefa ||!tb_usuario_id ) {
+       Alert.alert('Atenção', 'Por favor, preencha todos os campos.');
+       return;
+     }
+     const dadosTarefa = {
+     tituloTarefa: tituloTarefa,
+     descTarefa: descTarefa,
+     statusTarefa: statusTarefa,
+     prioridadeTarefa: prioridadeTarefa,
+     prazoTarefa: prazoTarefa,
+     tb_usuario_id: tb_usuario_id
+   };
+     axios.post(API_URL, dadosTarefa)
+       .then((response) => {
+         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+   //limpa o form
+         setTituloTarefa('');
+         setDescTarefa('');
+         setPrazoTarefa('');
+         setPrioridadeTarefa('');
+         setStatusTarefa('');
+         setTbUsuarioId('');
+       })
+       .catch((err) => {
+         console.error("Erro na requisição POST Axios:", err);
+         Alert.alert('Erro' ,"Não foi possível realizar o cadastro.");
+       })
+       .finally(() => {
+         setLoading(false);
+       });
+     };
 
   return (
 
@@ -220,10 +207,26 @@ export default function NovaTarefaScreen({ navigation }) {
 
           </View>
 
+          {/* ID */}
+          <View style={styles.campo}>
+
+            <Text style={styles.label}>
+              Id do Usuario
+            </Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Digite o id"
+              value={tb_usuario_id}
+              onChangeText={setTbUsuarioId}
+            />
+
+          </View>
+
           {/* BOTÃO CRIAR */}
           <TouchableOpacity
             style={styles.botao}
-            onPress={criarTarefa}
+            onPress={handleEnviar}
           >
 
             <Text style={styles.textoBotao}>
