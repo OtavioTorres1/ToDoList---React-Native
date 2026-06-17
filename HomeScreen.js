@@ -14,7 +14,7 @@ import axios from 'axios';
 import Header from './header';
 
 // para dar certo, iniciar com php artisan serve --host=0.0.0.0
-const API_URL = 'http://192.168.1.2:8000/api/tarefasApi'; 
+const API_URL = 'http://192.168.1.2:8000/api/ExibirTarefas'; 
 
 export default function HomeScreen({ navigation }) {
 
