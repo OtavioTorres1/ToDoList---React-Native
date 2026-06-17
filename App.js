@@ -18,6 +18,7 @@ import CadastroScreen from './Cadastro';
 import NovaTarefaScreen from './NovaTarefaScreen';
 import EditarTarefaScreen from './EditarTarefaScreen';
 import EditarUsuarioScreen from './EditarUsuarioScreen';
+import NovoComentarioScreen from './adicionarComentario';
 
 const Stack = createNativeStackNavigator();
 
@@ -79,6 +80,8 @@ export default function App() {
         />
 
         <Stack.Screen name="Cadastro" component={CadastroScreen} />
+
+        <Stack.Screen name="Comentar" component={NovoComentarioScreen} />
 
       </Stack.Navigator>
 

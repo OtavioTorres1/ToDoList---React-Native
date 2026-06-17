@@ -14,7 +14,7 @@ import axios from 'axios';
 import Header from './header';
 
 // para dar certo, iniciar com php artisan serve --host=0.0.0.0
-const API_URL = 'http://192.168.1.8:8000/api/tarefasApi'; 
+const API_URL = 'http://192.168.1.2:8000/api/tarefasApi'; 
 
 export default function HomeScreen({ navigation }) {
 
@@ -178,7 +178,7 @@ export default function HomeScreen({ navigation }) {
 
                   <View
                     style={[
-                      styles.statusBolinha,
+                      styles.ultimaColuna,
                       {
                         backgroundColor: getCorStatus(
                           item.statusTarefa
@@ -188,6 +188,18 @@ export default function HomeScreen({ navigation }) {
                   />
 
                 </View>
+
+                <TouchableOpacity onPress={() => navigation.navigate('Comentar')}>
+                  {/* <Image
+                    source={require('./assets/comentar.png')}
+                    style={styles.img}
+                  />*/}
+                  <Text style={{}}>
+                    💬
+                  </Text>
+                </TouchableOpacity> 
+
+                
 
               </View>
 
@@ -215,6 +227,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F4F6FA',
+  },
+
+  img: {
+    height: 250,
+    width: 350,
+    marginBottom: 10,
   },
 
   main: {
